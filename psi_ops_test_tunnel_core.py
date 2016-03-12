@@ -6,16 +6,17 @@ import shlex
 
 SOURCE_ROOT = os.path.join(os.path.abspath('../..'), 'psiphon-tunnel-core', 'ConsoleClient')
 TUNNEL_CORE = os.path.join(SOURCE_ROOT, 'ConsoleClient')
+CONFIG_FILE_NAME = os.path.join(SOURCE_ROOT, 'tunnel-core-config.config')
 
 
 
 def __test_tunnel_conre(propagation_channel_id, target_server, tunnel_protocol):
 
     config = {
-        # "TargetServerEntry": "", # Single Test Server Parameter
-        # "TunnelProtocol": "", # Single or group Test Protocol
+        "TargetServerEntry": target_server, # Single Test Server Parameter
+        "TunnelProtocol": tunnel_protocol, # Single or group Test Protocol
         "EgressRegion" : "",
-        "PropagationChannelId" : "E",
+        "PropagationChannelId" : propagation_channel_id,
         "SponsorId" : "",
         "RemoteServerListUrl" : "",
         "RemoteServerListSignaturePublicKey" : "",
@@ -29,12 +30,14 @@ def __test_tunnel_conre(propagation_channel_id, target_server, tunnel_protocol):
     }
 
 
-    config_file_name = '../../psiphon-tunnel-core/ConsoleClient/tunnel-core-config.config'
+    # config_file_name = '../../psiphon-tunnel-core/ConsoleClient/tunnel-core-config.config'
 
-    with open(config_file_name, 'w+') as config_file:
+    with open(CONFIG_FILE_NAME, 'w+') as config_file:
         json.dump(config, config_file)
 
-    cmd = '%s --config %s ' % (TUNNEL_CORE, config_file_name)
+    cmd = '%s --config %s ' % (TUNNEL_CORE, CONFIG_FILE_NAME)
+
+    print cmd
 
     # try:
     #     proc = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)

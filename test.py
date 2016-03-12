@@ -18,7 +18,7 @@ def test_test_server():
 
 
 def test_test_tunnel_core():
-    return psi_ops_test_tunnel_core.__test_tunnel_conre()
+    return psi_ops_test_tunnel_core.__test_tunnel_conre("Test", "Test", "Test")
 
 
 test_test_tunnel_core()
