@@ -17,8 +17,5 @@ def test_test_server():
                                 executable_path)
 
 
-def test_test_tunnel_core():
-    return psi_ops_test_tunnel_core.__test_tunnel_conre("Test", "Test", "Test")
-
-
-test_test_tunnel_core()
+def test_test_tunnel_core(propagation_channel_id, target_server, tunnel_protocol):
+    return psi_ops_test_tunnel_core.__test_tunnel_conre(propagation_channel_id, target_server, tunnel_protocol)
