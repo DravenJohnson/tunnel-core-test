@@ -5,10 +5,8 @@ import shlex
 import time
 import signal
 
-
 SOURCE_ROOT = os.path.join(os.path.abspath('.'), 'bin')
 TUNNEL_CORE = os.path.join(SOURCE_ROOT, 'darwin', 'psiphon-tunnel-core-x86_64')
-# TUNNEL_CORE = os.path.join(SOURCE_ROOT, 'psiphonClient.go')
 CONFIG_FILE_NAME = os.path.join(SOURCE_ROOT, 'tunnel-core-config.config')
 
 
