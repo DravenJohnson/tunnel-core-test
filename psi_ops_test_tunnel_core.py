@@ -6,7 +6,7 @@ import signal
 
 
 SOURCE_ROOT = os.path.join(os.path.abspath('.'), 'bin')
-TUNNEL_CORE = os.path.join(SOURCE_ROOT, 'darwin', 'psiphon-tunnel-core-x86_64')
+TUNNEL_CORE = os.path.join(SOURCE_ROOT, 'windows', 'psiphon-tunnel-core-i686')
 # TUNNEL_CORE = os.path.join(SOURCE_ROOT, 'psiphonClient.go')
 CONFIG_FILE_NAME = os.path.join(SOURCE_ROOT, 'tunnel-core-config.config')
 
@@ -34,7 +34,10 @@ def __test_tunnel_core(propagation_channel_id, target_server, tunnel_protocol, s
     with open(CONFIG_FILE_NAME, 'w+') as config_file:
         json.dump(config, config_file)
 
-    cmd = '%s --config %s ' % (TUNNEL_CORE, CONFIG_FILE_NAME)
+    cmd = '"%s" \
+    --config \
+    "%s"' \
+    % (TUNNEL_CORE, CONFIG_FILE_NAME)
 
     try:
 
@@ -48,7 +51,6 @@ def __test_tunnel_core(propagation_channel_id, target_server, tunnel_protocol, s
             raise Exception('Tunnel Core Testing Fail: ' + str(output))
 
     finally:
-        pass
         if '"count":1' in output:
             print "PASS"
         else:
