@@ -2,7 +2,7 @@ import json
 import os
 import subprocess
 import shlex
-import signal
+import time
 
 
 SOURCE_ROOT = os.path.join(os.path.abspath('.'), 'bin')
