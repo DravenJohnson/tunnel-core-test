@@ -2,11 +2,12 @@ import json
 import os
 import subprocess
 import shlex
+import time
 import signal
 
 
 SOURCE_ROOT = os.path.join(os.path.abspath('.'), 'bin')
-TUNNEL_CORE = os.path.join(SOURCE_ROOT, 'windows', 'psiphon-tunnel-core-i686')
+TUNNEL_CORE = os.path.join(SOURCE_ROOT, 'darwin', 'psiphon-tunnel-core-x86_64')
 # TUNNEL_CORE = os.path.join(SOURCE_ROOT, 'psiphonClient.go')
 CONFIG_FILE_NAME = os.path.join(SOURCE_ROOT, 'tunnel-core-config.config')
 
@@ -42,15 +43,22 @@ def __test_tunnel_core(propagation_channel_id, target_server, tunnel_protocol, s
     try:
 
         proc = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output = proc.communicate()[1] # return the command output
 
-
+        time.sleep(20)
         # TODO: Kill Process or stop Tunnel Core.
+        try:
+            proc.send_signal(signal.SIGINT)
+            # proc.kill()
+        except OSError, e:
+            print("Kill Error")
+
+        output = proc.communicate()[1] # return the command output
 
         if proc.returncode != 0:
             raise Exception('Tunnel Core Testing Fail: ' + str(output))
 
     finally:
+        # pass
         if '"count":1' in output:
             print "PASS"
         else:
