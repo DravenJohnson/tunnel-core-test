@@ -34,7 +34,7 @@ def __test_tunnel_core(propagation_channel_id, target_server, tunnel_protocol, s
     with open(CONFIG_FILE_NAME, 'w+') as config_file:
         json.dump(config, config_file)
 
-    cmd = 'go run %s --config %s ' % (TUNNEL_CORE, CONFIG_FILE_NAME)
+    cmd = '%s --config %s ' % (TUNNEL_CORE, CONFIG_FILE_NAME)
 
     try:
 
