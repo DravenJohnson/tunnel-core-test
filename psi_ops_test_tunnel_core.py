@@ -10,16 +10,16 @@ CONFIG_FILE_NAME = os.path.join(SOURCE_ROOT, 'tunnel-core-config.config')
 
 
 
-def __test_tunnel_conre(propagation_channel_id, target_server, tunnel_protocol):
+def __test_tunnel_conre(propagation_channel_id, target_server, tunnel_protocol, sponsor_id):
 
     config = {
         "TargetServerEntry": target_server, # Single Test Server Parameter
         "TunnelProtocol": tunnel_protocol, # Single or group Test Protocol
         "EgressRegion" : "",
         "PropagationChannelId" : propagation_channel_id,
-        "SponsorId" : "",
-        "RemoteServerListUrl" : "",
-        "RemoteServerListSignaturePublicKey" : "",
+        "SponsorId" : sponsor_id,
+        # "RemoteServerListUrl" : "",
+        # "RemoteServerListSignaturePublicKey" : "",
         "LogFilename" : "",
         "LocalHttpProxyPort" : 8080,
         "LocalSocksProxyPort" : 1080,
@@ -37,10 +37,17 @@ def __test_tunnel_conre(propagation_channel_id, target_server, tunnel_protocol):
     try:
 
         proc = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output = proc.communicate() # return the command output
+        output = json.loads(proc.communicate()[0]) # return the command output
+
+        if proc.returncode != 0:
+            raise Exception('Tunnel Core Testing Fail: ' + str(output))
 
     finally:
         pass
+        # if output["data"]["count"] == 1:
+        #     print "PASS"
+        # else:
+        #     print "FAIL"
         # os.remove(CONFIG_FILE_NAME)
 
 
@@ -51,7 +58,7 @@ def test_server(ip_address, capabilities, web_server_port, web_server_secret, en
     for test_case in local_test_cases:
         if test_case in ['OSSH', 'SSH', 'HTTP', 'HTTPS']:
             try:
-                result = self.__test_tunnel_conre()
+                result = self.__test_tunnel_conre(test_propagation_channel_id, encoded_server_list, test_cases, sponsor_id)
                 results[test_case] = 'PASS' if result else 'FAIL'
             except Exception as ex:
                 results[test_case] = 'FAIL: ' + str(ex)

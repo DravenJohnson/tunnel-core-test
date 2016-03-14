@@ -1,6 +1,6 @@
 import psi_ops_test_tunnel_core
 
-def test_test_server():
+def test_test_server(self, server, test_cases, version, test_propagation_channel_id, executable_path=None):
     return psi_ops_test_tunnel_core.test_server(
                                 server.ip_address,
                                 server.capabilities,
@@ -17,5 +17,5 @@ def test_test_server():
                                 executable_path)
 
 
-def test_test_tunnel_core(propagation_channel_id, target_server, tunnel_protocol):
-    return psi_ops_test_tunnel_core.__test_tunnel_conre(propagation_channel_id, target_server, tunnel_protocol)
+def test_test_tunnel_core(propagation_channel_id, target_server, tunnel_protocol, sponsor_id):
+    return psi_ops_test_tunnel_core.__test_tunnel_conre(propagation_channel_id, target_server, tunnel_protocol, sponsor_id)
