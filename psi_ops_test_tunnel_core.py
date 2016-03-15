@@ -42,13 +42,15 @@ def __test_tunnel_core(propagation_channel_id, target_server, tunnel_protocol, s
 
         proc = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        time.sleep(20)
+
         # TODO: Kill Process or stop Tunnel Core.
-        try:
-            proc.send_signal(signal.SIGINT)
-            # proc.kill()
-        except OSError, e:
-            print("Kill Error")
+        # time.sleep(20)
+
+        # try:
+        #     proc.send_signal(signal.SIGINT)
+        #     # proc.kill()
+        # except OSError, e:
+        #     print("Kill Error")
 
         output = proc.communicate()[1] # return the command output
 
