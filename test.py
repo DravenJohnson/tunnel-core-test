@@ -17,5 +17,5 @@ def test_test_server(self, server, test_cases, version, test_propagation_channel
                                 executable_path)
 
 
-def test_test_tunnel_core(propagation_channel_id, target_server, tunnel_protocol, sponsor_id):
-    return psi_ops_test_tunnel_core.__test_tunnel_core(propagation_channel_id, target_server, tunnel_protocol, sponsor_id)
+def test_test_tunnel_core(expected_egress_ip_addresses, propagation_channel_id, target_server, tunnel_protocol, sponsor_id):
+    return psi_ops_test_tunnel_core.__test_tunnel_core(expected_egress_ip_addresses, propagation_channel_id, target_server, tunnel_protocol, sponsor_id)

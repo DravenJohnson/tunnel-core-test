@@ -11,7 +11,7 @@ CONFIG_FILE_NAME = os.path.join(SOURCE_ROOT, 'tunnel-core-config.config')
 
 
 
-def __test_tunnel_core(propagation_channel_id, target_server, tunnel_protocol, sponsor_id):
+def __test_tunnel_core(expected_egress_ip_addresses, propagation_channel_id, target_server, tunnel_protocol, sponsor_id):
 
     config = {
         "TargetServerEntry": target_server, # Single Test Server Parameter
@@ -37,6 +37,8 @@ def __test_tunnel_core(propagation_channel_id, target_server, tunnel_protocol, s
     --config \
     "%s"' \
     % (TUNNEL_CORE, CONFIG_FILE_NAME)
+
+    print 'Start Testing Server "%s" with Protocol "%s"' % (expected_egress_ip_addresses, tunnel_protocol)
 
     try:
 
