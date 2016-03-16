@@ -4,14 +4,20 @@ import subprocess
 import shlex
 import time
 import signal
+import run
 
 SOURCE_ROOT = os.path.join(os.path.abspath('.'), 'bin')
 TUNNEL_CORE = os.path.join(SOURCE_ROOT, 'darwin', 'psiphon-tunnel-core-x86_64')
 CONFIG_FILE_NAME = os.path.join(SOURCE_ROOT, 'tunnel-core-config.config')
 
+CHECK_IP_ADDRESS_URL_LOCAL = run.CHECK_IP_ADDRESS_URL_LOCAL
+CHECK_IP_ADDRESS_URL_REMOTE = run.CHECK_IP_ADDRESS_URL_REMOTE
 
 
 def __test_tunnel_core(expected_egress_ip_addresses, propagation_channel_id, target_server, tunnel_protocol, sponsor_id):
+
+    has_remote_check = len(CHECK_IP_ADDRESS_URL_REMOTE) > 0
+    has_local_check = len(CHECK_IP_ADDRESS_URL_LOCAL) > 0
 
     config = {
         "TargetServerEntry": target_server, # Single Test Server Parameter
@@ -33,7 +39,7 @@ def __test_tunnel_core(expected_egress_ip_addresses, propagation_channel_id, tar
     with open(CONFIG_FILE_NAME, 'w+') as config_file:
         json.dump(config, config_file)
 
-    cmd = '"%s" \
+    cmd = 'cmd.exe /c start "%s" \
     --config \
     "%s"' \
     % (TUNNEL_CORE, CONFIG_FILE_NAME)
@@ -42,30 +48,51 @@ def __test_tunnel_core(expected_egress_ip_addresses, propagation_channel_id, tar
 
     try:
 
-        proc = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(shlex.split(cmd))
 
-
-        # TODO: Kill Process or stop Tunnel Core.
-        # time.sleep(20)
-
-        # try:
-        #     proc.send_signal(signal.SIGINT)
-        #     # proc.kill()
-        # except OSError, e:
-        #     print("Kill Error")
-
-        output = proc.communicate()[1] # return the command output
+        time.sleep(25)
 
         if proc.returncode != 0:
-            raise Exception('Tunnel Core Testing Fail: ' + str(output))
+            raise Exception('Tunnel Core Testing Fail')
+
+        #TODO: add check proxy part
+        urllib2.install_opener(urllib2.build_opener(urllib2.ProxyHandler({'http': 'http://127.0.0.1:8080'})))
+
+        if has_local_check:
+            # Get egress IP from web site in same GeoIP region; local split tunnel is not proxied
+
+            egress_ip_address = urlopen(CHECK_IP_ADDRESS_URL_LOCAL, 30).read().split('\n')[0]
+
+            is_proxied = (egress_ip_address in expected_egress_ip_addresses)
+
+            if (transport == 'VPN' or not split_tunnel_mode) and not is_proxied:
+                raise Exception('Local case/VPN/not split tunnel: egress is %s and expected egresses are %s' % (
+                                    egress_ip_address, ','.join(expected_egress_ip_addresses)))
+
+            if transport != 'VPN' and split_tunnel_mode and is_proxied:
+                raise Exception('Local case/not VPN/split tunnel: egress is %s and expected egresses are ANYTHING OTHER THAN %s' % (
+                                    egress_ip_address, ','.join(expected_egress_ip_addresses)))
+
+        if has_remote_check:
+            # Get egress IP from web site in different GeoIP region; remote split tunnel is proxied
+
+            egress_ip_address = urlopen(CHECK_IP_ADDRESS_URL_REMOTE, 30).read().split('\n')[0]
+
+            is_proxied = (egress_ip_address in expected_egress_ip_addresses)
+
+            if not is_proxied:
+                raise Exception('Remote case: egress is %s and expected egresses are %s' % (
+                                    egress_ip_address, ','.join(expected_egress_ip_addresses)))
 
     finally:
-        # pass
-        if '"count":1' in output:
-            print "PASS"
-        else:
-            print "FAIL"
-        os.remove(CONFIG_FILE_NAME)
+        try:
+            win32ui.FindWindow(None, TUNNEL_CORE).PostMessage(win32con.WM_CLOSE)
+        except Exception as e:
+            print e
+        try:
+            os.remove(CONFIG_FILE_NAME)
+        except Exception as e:
+            print "Remove Config File Failed" + str(e)
 
 
 # Haven't Test this part yet
